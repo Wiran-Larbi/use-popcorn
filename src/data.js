@@ -1,4 +1,5 @@
-
+export const API_KEY = "b0aacc12";
+export const API_URL = "https://www.omdbapi.com/";
 export const tempMovieData = [
     {
         imdbID: "tt1375666",

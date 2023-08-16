@@ -61,16 +61,30 @@ body::-webkit-scrollbar {
   max-width: 42rem;
   background-color: var(--color-background-500);
   border-radius: 0.9rem;
-  overflow: hidden;
+  overflow: scroll;
   position: relative;
+}
+
+.box::-webkit-scrollbar {
+  width: 0;
 }
 
 .loader {
   text-align: center;
-  text-transform: uppercase;
-  font-size: 2rem;
+  text-transform: capitalize;
+  font-size: 1.6rem;
   font-weight: 600;
   margin: 4.8rem;
+}
+
+.icon-back {
+  transform: scale(1.3);
+  margin-right: 2px;
+}
+
+.icon-add {
+  transform: scale(0.2);
+  width: 12px;
 }
 
 .error {
@@ -199,7 +213,7 @@ body::-webkit-scrollbar {
   position: absolute;
   right: 2.4rem;
 
-  height: 1.8rem;
+  height: 2rem;
   aspect-ratio: 1;
   border-radius: 50%;
   border: none;

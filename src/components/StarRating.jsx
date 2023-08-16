@@ -31,7 +31,7 @@ export function StarRating({
     className = '',
     defaultRating = 0,
     messages = [],
-    onSetRating = () => { }
+    onSetRating
 }) {
     const [rating, setRating] = useState(defaultRating);
     const [tempRating, setTempRating] = useState(0);
@@ -40,7 +40,7 @@ export function StarRating({
         lineHeight: "1",
         margin: "0",
         color,
-        fontSize: `${size / 1.5}px`
+        fontSize: `${size / 1.2}px`
     }
 
     function handleSetRating(rating) {
