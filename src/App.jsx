@@ -17,19 +17,14 @@ import { WatchedMoviesList } from "./components/WatchedMoviesList";
 import { WatchedSummary } from "./components/WatchedSummary";
 import { useRef } from "react";
 import { useMovies } from "./hooks/useMovies";
+import { useLocalStorageState } from "./hooks/useLocalStorageState";
 
 export default function App() {
 
   const [query, setQuery] = useState("");
-  const [watched, setWatched] = useState(watchedState);
+  const [watched, setWatched] = useLocalStorageState([], "watched");
   const [selectedId, setSelectedId] = useState(null);
-  
 
-
-  function watchedState() {
-      const storedWatchedMovies = localStorage.getItem("watched") || "[]";
-      return JSON.parse(storedWatchedMovies);
-  }
 
   function handleSelectedMovie(id) {
     setSelectedId(selectedId => id === selectedId ? null : id);

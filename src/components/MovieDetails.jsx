@@ -3,6 +3,7 @@ import { Loader } from "./Loader";
 import { StarRating } from "./StarRating";
 import { useEffect } from "react";
 import { API_KEY, API_URL } from "../data.js";
+import { useKey } from "../hooks/useKey";
 
 
 export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched }) {
@@ -27,6 +28,8 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
         Director: director,
         Genre: genre
     } = movieDetails;
+
+    useKey("Escape", onCloseMovie);
     
     useEffect(() => {
         if (userRating)
@@ -69,20 +72,7 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
         return cleanUp;
     }, [title]);
     
-    useEffect(() => {
-        function callback(e) {
-            if (e.code === "Escape") {
-                onCloseMovie();
-            }
-        }
-        
-        document.addEventListener("keydown", callback);
-        
-        
-        return function () {
-            document.removeEventListener("keydown", callback);
-        }
-    })
+  
     
     function handleAddToList() {
         const newWatchedMovie = {
