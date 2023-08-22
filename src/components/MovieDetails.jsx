@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Loader } from "./Loader";
 import { StarRating } from "./StarRating";
 import { useEffect } from "react";
@@ -9,9 +9,12 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
     const [movieDetails, setMovieDetails] = useState({});
     const [userRating, setUserRating] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+
+    let ratedCounter = useRef(0);
+    
+    
     const isWatched = watched.map(movie => movie.imdbId).includes(selectedId);
     const WatchedUserRating = watched.find(movie => movie.imdbId === selectedId)?.userRating;
-
     const {
         Title: title,
         Year: year,
@@ -22,8 +25,14 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
         Released: released,
         Actors: actors,
         Director: director,
-        Genre: genre,
+        Genre: genre
     } = movieDetails;
+    
+    useEffect(() => {
+        if (userRating)
+        ratedCounter.current++;
+    
+}, [userRating])
 
     useEffect(() => {
         async function getMovieDetails() {
@@ -31,10 +40,10 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
                 setIsLoading(true)
                 const res = await fetch(`${API_URL}?apikey=${API_KEY}&i=${selectedId}`);
                 const data = await res.json();
-
+                
                 console.log(data);
                 setMovieDetails(data);
-
+                
             } catch (error) {
                 console.error(error);
             }
@@ -42,10 +51,10 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
                 setIsLoading(false);
             }
         }
-
+        
         getMovieDetails();
     }, [selectedId]);
-
+    
     useEffect(() => {
         function updatePageTitle() {
             if (!title) return;
@@ -55,28 +64,26 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
                 document.title = 'usePopcorn';
             }
         }
-
+        
         const cleanUp = updatePageTitle();
         return cleanUp;
     }, [title]);
-
+    
     useEffect(() => {
         function callback(e) {
             if (e.code === "Escape") {
                 onCloseMovie();
             }
         }
-
+        
         document.addEventListener("keydown", callback);
-
-
+        
+        
         return function () {
             document.removeEventListener("keydown", callback);
         }
-
-
     })
-
+    
     function handleAddToList() {
         const newWatchedMovie = {
             imdbId: selectedId,
@@ -85,22 +92,24 @@ export function MovieDetails({ selectedId, watched, onCloseMovie, onAddToWatched
             year,
             imdbRating: Number(imdbRating),
             userRating,
-            runtime: isNaN(Number(runtime.split(' ').at(0))) ? 0 : Number(runtime.split(' ').at(0))
+            runtime: isNaN(Number(runtime.split(' ').at(0))) ? 0 : Number(runtime.split(' ').at(0)),
+            ratedCounter: ratedCounter.current
         }
-
-
+        
+        
         onAddToWatched(newWatchedMovie);
         onCloseMovie();
     }
-
+    
+    
     return (
         <>
             <div className="details">
                 {
                     isLoading
-                        ?
-                        <Loader />
-                        :
+                    ?
+                    <Loader />
+                    :
                         <>
                             <header className="">
                                 <button className="btn-back" onClick={onCloseMovie}>

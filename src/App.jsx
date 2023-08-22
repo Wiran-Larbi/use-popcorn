@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { API_URL, tempMovieData, tempWatchedData } from "./data";
-import { API_KEY } from "./data";
 import { useEffect } from "react";
 // Componenets
 
@@ -16,15 +15,21 @@ import { ErrorMessage } from "./components/ErrorMessage"
 import { Loader } from "./components/Loader";
 import { WatchedMoviesList } from "./components/WatchedMoviesList";
 import { WatchedSummary } from "./components/WatchedSummary";
+import { useRef } from "react";
+import { useMovies } from "./hooks/useMovies";
 
 export default function App() {
 
   const [query, setQuery] = useState("");
-  const [movies, setMovies] = useState([]);
-  const [watched, setWatched] = useState([]);
+  const [watched, setWatched] = useState(watchedState);
   const [selectedId, setSelectedId] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  
+
+
+  function watchedState() {
+      const storedWatchedMovies = localStorage.getItem("watched") || "[]";
+      return JSON.parse(storedWatchedMovies);
+  }
 
   function handleSelectedMovie(id) {
     setSelectedId(selectedId => id === selectedId ? null : id);
@@ -39,48 +44,14 @@ export default function App() {
     setWatched(watched => watched.filter(movie => movie.imdbId !== id));
   }
 
-  useEffect(() => {
-    const controller = new AbortController();
+  // ? Side Effect of Fetching the Movies Data (using Custom Hook)
+  const {movies, isLoading, error} = useMovies(query);
+ 
 
-    async function getMovies() {
-
-      try {
-        setIsLoading(true);
-        setError("");
-        const res = await fetch(`${API_URL}?apikey=${API_KEY}&s=${query}`, {
-          signal: controller.signal
-        });
-        const data = await res.json();
-        if (data.Response === 'False') throw new Error('Movie Not Found')
-
-        setMovies(data.Search);
-
-
-      } catch (error) {
-        if (error.name !== "AbortError") {
-          console.error(error.message);
-          setError(error.message);
-        }
-      } finally {
-        setIsLoading(false);
-      }
-
-    }
-
-    if (query.length < 3) {
-      setMovies([])
-      setError("")
-      return
-    }
-
-    getMovies();
-
-    // CleanUp Function
-    return () => {
-      controller.abort();
-    }
-
-  }, [query]);
+  // ? Side Effect to Store watched movies into Local Storage
+  useEffect(function () {
+    localStorage.setItem("watched", JSON.stringify(watched));
+  }, [watched]);
 
 
 
